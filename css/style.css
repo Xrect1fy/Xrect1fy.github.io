@@ -23,3 +23,12 @@
     -ms-transition: all 0.5s;
     transition: all 0.5s;
 }
+#pagination .page-number.current {
+    background: #fcff69ad;
+    color: var(--white);
+}
+
+
+element.style {
+    background: #7284e5;
+}

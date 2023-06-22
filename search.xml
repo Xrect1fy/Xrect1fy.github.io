@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>test</title>
+      <link href="/2023/06/22/test/"/>
+      <url>/2023/06/22/test/</url>
+      
+        <content type="html"><![CDATA[<p>##2<br>这是一个测试</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> thetest </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> test </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>代码演示</title>
       <link href="/2023/06/21/%E4%BB%A3%E7%A0%81%E5%9D%97%E6%BC%94%E7%A4%BA/%E6%BC%94%E7%A4%BA/"/>
       <url>/2023/06/21/%E4%BB%A3%E7%A0%81%E5%9D%97%E6%BC%94%E7%A4%BA/%E6%BC%94%E7%A4%BA/</url>
