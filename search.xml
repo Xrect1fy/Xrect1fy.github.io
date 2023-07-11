@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>CSRF基础</title>
+      <link href="/2023/07/11/CSRF%E5%9F%BA%E7%A1%80/"/>
+      <url>/2023/07/11/CSRF%E5%9F%BA%E7%A1%80/</url>
+      
+        <content type="html"><![CDATA[<h1 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h1><h2 id="1-CSRF基础"><a href="#1-CSRF基础" class="headerlink" title="1.CSRF基础"></a>1.CSRF基础</h2><p>CSRF（Cross-Site Request Forgery），也称为跨站请求伪造，是一种常见的Web应用程序安全漏洞。它利用了Web应用程序对用户请求的信任，攻击者通过欺骗用户在受害者身份下执行恶意操作。</p><p>CSRF攻击的基本过程如下：</p><ol><li>用户登录：用户在一个网站A上进行登录，网站A会为其分配一个会话（session）。</li><li>恶意网站：用户后续浏览其他网站时，访问了一个恶意网站B。</li><li>伪造请求：恶意网站B会构造一个请求，该请求会针对用户在网站A上的身份进行操作，例如修改密码、转账等。</li><li>伪装请求：恶意网站B使用各种技术手段，如隐藏表单、图片标签或者通过Ajax请求等，将这个伪造的请求发送给网站A。</li><li>用户误操作：由于用户已经登录了网站A并信任该网站，浏览器会在不知情的情况下发送伪造请求，并执行恶意操作。</li></ol><p>CSRF攻击的危害取决于受到攻击的网站的业务逻辑和用户权限。该漏洞可能导致用户账户被盗、敏感信息泄露、非授权操作等。为了防范CSRF攻击，开发者可以采取一些措施，如使用CSRF令牌、验证Referer头、双重因素身份验证等。</p><p>漏洞危害</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">具体功能决定危害程度</span><br><span class="line">修改性别 / 个人信息等</span><br><span class="line">修改管理员密码</span><br><span class="line">添加管理员</span><br><span class="line">后台getshell</span><br></pre></td></tr></table></figure><h2 id="2-CSRF防御"><a href="#2-CSRF防御" class="headerlink" title="2.CSRF防御"></a>2.CSRF防御</h2><p>1.验证HTTP Referer字段</p><p>2.添加Token字段并验证</p><p>3.添加自定义字段并验证</p><h2 id="3-CSRF漏洞检测"><a href="#3-CSRF漏洞检测" class="headerlink" title="3.CSRF漏洞检测"></a>3.CSRF漏洞检测</h2><p>漏洞检测:</p><p>a.敏感功能缺乏csrf防护机制</p><ol><li>在burpsuite中观察post请求是否带有随机Token 和 验证码</li><li>再判断 去掉&#x2F;修改 Referer后是否仍然可以提交成功</li></ol><p>b.网站可以允许写入csrf payload</p><ol><li>测试用户头像<code>&lt;img&gt;</code> &#x2F; 富文本区域的<code>&lt;img&gt;</code> <code>&lt;svg&gt;</code>标签(可控)</li><li>插入payload</li></ol><p>挖掘思路:</p><p>1.是否存在token和验证码,是否可以删除或伪造</p><p>2.是否可以删除或伪造referer</p><p>3.&lt;img&gt;&#x2F;&lt;svg&gt;等标签链接是否可控</p><p>常见漏洞点</p><p>1.修改密码 2.修改个人信息 3.发布文章 4.与账号相关的大部分业务功能点</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> web </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> web </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>XSS基础</title>
       <link href="/2023/07/09/XSS%E5%9F%BA%E7%A1%80/"/>
       <url>/2023/07/09/XSS%E5%9F%BA%E7%A1%80/</url>
