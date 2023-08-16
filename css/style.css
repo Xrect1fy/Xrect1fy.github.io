@@ -118,3 +118,8 @@
 }
 
 /* 设置cover */
+/*尝试更改左侧栏目的颜色*/
+*::selection {
+  background: #6f42c1;
+  color: #f7f7f7;
+}
