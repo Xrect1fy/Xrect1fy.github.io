@@ -119,7 +119,56 @@
 
 /* 设置cover */
 /*尝试更改左侧栏目的颜色*/
-*::selection {
-  background: #6f42c1;
-  color: #f7f7f7;
+#aside-content #card-toc .toc-content .toc-link.active {
+  background: #6f42c1b0;
+  color: #fff;
+}
+.layout > div:first-child {
+  width: 80%;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  -ms-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+/*字体*/
+@font-face{
+  font-family: 'Open+Sans';
+  src: url('https://fonts.google.com/specimen/Open+Sans');   
+}
+​
+body {
+  font-family: 'Open+Sans'; 
+}
+
+
+
+
+
+/*透明*/
+
+/* 文章页背景 */
+.layout_post>#post {
+  /* 以下代表透明度为0.7 可以自行修改*/
+  background: rgba(255,255,255,.7);
+}
+
+/* 所有页面背景 */
+#aside_content .card-widget, #recent-posts>.recent-post-item, .layout_page>div:first-child:not(.recent-posts), .layout_post>#page, .layout_post>#post, .read-mode .layout_post>#post{
+  /* 以下代表透明度为0.7 */
+  background: rgba(255,255,255,.7);
+}
+/*侧边卡片的透明度 */
+:root {
+--card-bg: rgba(255, 255, 255, .7);
+}
+/* 页脚透明 */
+#footer {
+/* 以下代表透明度为0.7 */
+background: rgba(255,255,255, .0);
+}
+
+.layout #post {
+  font-size: 18px
 }
