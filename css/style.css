@@ -132,20 +132,6 @@
   transition: all 0.3s;
 }
 
-/*字体*/
-@font-face{
-  font-family: 'Open+Sans';
-  src: url('https://fonts.google.com/specimen/Open+Sans');   
-}
-​
-body {
-  font-family: 'Open+Sans'; 
-}
-
-
-
-
-
 /*透明*/
 
 /* 文章页背景 */
