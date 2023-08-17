@@ -177,3 +177,13 @@ background: rgba(255,255,255, .0);
   background: #602fd1;
   color: var(--white);
 }
+
+.list-beauty li:before, .category-lists ul li:before {
+  border: 0.215em solid #8e42ff;
+}
+
+/* 选中 */
+*::selection {
+  background: #8866be;
+  color: #f7f7f7;
+}
