@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>域渗透(二)-内网信息收集</title>
+      <link href="/2023/09/03/%E5%9F%9F%E6%B8%97%E9%80%8F(%E4%BA%8C)-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/"/>
+      <url>/2023/09/03/%E5%9F%9F%E6%B8%97%E9%80%8F(%E4%BA%8C)-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/</url>
+      
+        <content type="html"><![CDATA[<h2 id="1-本机基础信息收集"><a href="#1-本机基础信息收集" class="headerlink" title="1.本机基础信息收集"></a>1.本机基础信息收集</h2><h3 id="1-系统信息搜集"><a href="#1-系统信息搜集" class="headerlink" title="1.系统信息搜集"></a>1.系统信息搜集</h3><p>1.查看操作系统信息</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">systeminfo</span><br><span class="line">systeminfo | findstr /B /C:&quot;OS Name&quot; /C:&quot;OS VersioN&quot;</span><br><span class="line">systeminfo | findstr /B /C:&quot;OS 名称&quot; /C:&quot;OS 版本&quot;</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031023541.png" alt="image.png"></p><p>2.查看当前的进程</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tasklist</span><br><span class="line">tasklist /SVC</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031025782.png" alt="image.png"></p><p>WMIC是Windows管理规范的命令行工具<br>通过wmic查询主机进程信息，过滤出进程的路径、名称和PID</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">wmic process get Name, ProcessId, ExecutablePath</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031028007.png" alt="image.png"></p><p>查看指定进程的路径信息</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">wmic process where Name=&quot;msdtc.exe&quot; get ExecutablePath</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031028574.png" alt="image.png"></p><p>3.查看当前的服务信息<br>查看所有服务信息并过滤出服务的名称、路径、创建时间、运行状态信息</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">wmic service get Caption,Name,PathName,StartName,State</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031030707.png" alt="image.png"></p><p>查看指定服务</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">wmic service where Name=&quot;vds&quot; get Caption,Name,PathName,StartName,State</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031034263.png" alt="image.png"></p><p>4.查看计划任务信息</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">schtasks /query /v /fo list </span><br><span class="line">schtasks /query /v /fo list &gt; 1.txt</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031036114.png" alt="image.png"></p><p>5.查看程序自启动程序信息<br>查看自启动程序信息，过滤出 名称、执行命令、执行路径、所属用户</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">wmic startup get Caption,Command,Location,User</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031040978.png" alt="image.png"></p><p>6..查看补丁安装信息<br>查看当前主机上安装的补丁列表，并过滤出补丁连接、名称、描述、补丁编号以及安装时间,可以推测目标主机系统版本和缺少的补丁辅助后面的提权。</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">wmic qfe get Caption,CSName,Description,HotFixID,InstalledOn</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031143129.png" alt="image.png"></p><p>7.查看应用安装信息<br>查看主机安装的应用软件信息，并过滤出应用的名称和版本</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Wmic product get Caption,Version</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031141646.png" alt="image.png"></p><h3 id="2-用户信息搜集"><a href="#2-用户信息搜集" class="headerlink" title="2.用户信息搜集"></a>2.用户信息搜集</h3><ol><li>查看用户及所处组、所拥有特权<br>测试人员可以根据当前所有的信息对当前用户权限进行一个判断,推测是否需要进一步提权<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">whoami /all</span><br></pre></td></tr></table></figure></li></ol><p>2.查看本地用户&#x2F;组信息<br>查看用户信息</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">net user</span><br><span class="line">net user &lt;username&gt;</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031148012.png" alt="image.png"></p><p>产看本地管理员组</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">net localgroup administrators</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031149312.png" alt="image.png"><br>该主机加入域时,域全局组”HACK-MY\Domain Admins”自动添加到计算机本地Administratos组中。</p><p>主机本地创建一个新用户并加入管理员组</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">net user &lt;username&gt; &lt;password&gt; /add</span><br><span class="line">net localgroup Administrators &lt;username&gt; /add</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031152986.png" alt="image.png"><br><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031152673.png"></p><p>3.查看当前登录用户</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">query user</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309031154032.png" alt="image.png"></p><h3 id="3-网络信息搜集"><a href="#3-网络信息搜集" class="headerlink" title="3.网络信息搜集"></a>3.网络信息搜集</h3><p>(持续更新中)</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网安 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 内网渗透 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>数据库基础</title>
       <link href="/2023/09/02/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/"/>
       <url>/2023/09/02/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/</url>
