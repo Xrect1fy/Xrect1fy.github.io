@@ -4,7 +4,7 @@
   
     
     <entry>
-      <title>CNVD挖掘过程中的一次SQL注入分析</title>
+      <title>一次SQL注入WAF绕过记录</title>
       <link href="/2024/01/30/%E4%B8%80%E6%AC%A1SQL%E6%B3%A8%E5%85%A5WAF%E7%BB%95%E8%BF%87%E8%AE%B0%E5%BD%95/"/>
       <url>/2024/01/30/%E4%B8%80%E6%AC%A1SQL%E6%B3%A8%E5%85%A5WAF%E7%BB%95%E8%BF%87%E8%AE%B0%E5%BD%95/</url>
       
