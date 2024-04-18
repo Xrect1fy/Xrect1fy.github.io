@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>机器学习</title>
+      <link href="/2024/04/18/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+      <url>/2024/04/18/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</url>
+      
+        <content type="html"><![CDATA[<p>课程链接:<br><a href="https://www.bilibili.com/video/BV1Bq421A74G/?spm_id_from=333.337.search-card.all.click">https://www.bilibili.com/video/BV1Bq421A74G/?spm_id_from=333.337.search-card.all.click</a></p><h2 id="1-机器学习概述"><a href="#1-机器学习概述" class="headerlink" title="1.机器学习概述"></a>1.机器学习概述</h2><h3 id="1-监督学习"><a href="#1-监督学习" class="headerlink" title="1.监督学习"></a>1.监督学习</h3><p>1.监督学习:input -&gt; output,给定输入x 映射到 输出y。<br>给输入x的正确标签y以供学习。<br>通过输入x和所需输出标签y的正确对，学习算法最终学会只接受输入而无需输出标签并给出合理预测。<br>例如:<br><img src="https://cdn.jsdelivr.net/gh/0Rec1us/picorep//img/20240418103425.png" width="75%" height="auto"><br>主要类型监督学习问题: 回归 分类<br>2.回归: 通过无数可能的数字中预测最可能的数字,例如房价预测<br><img src="https://cdn.jsdelivr.net/gh/0Rec1us/picorep//img/20240418103829.png" width="75%" height="auto"><br>3.分类: 有限类别中进行分类,例如肿瘤预测<br><img src="https://cdn.jsdelivr.net/gh/0Rec1us/picorep//img/20240418104315.png" width="75%" height="auto"></p><h3 id="2-非监督学习"><a href="#2-非监督学习" class="headerlink" title="2.非监督学习"></a>2.非监督学习</h3><p>1.非监督学习: 仅有输入标签x 无输出标签y，在结构或模式中找到信息</p><p>主要类型非监督学习问题: 聚类 异常检测 降维<br>2.聚类:将未标记的数据放入不同的集群中 例如根据DNA将人分类<br><img src="https://cdn.jsdelivr.net/gh/0Rec1us/picorep//img/20240418105328.png" width="75%" height="auto"></p><h2 id="2-线性回归"><a href="#2-线性回归" class="headerlink" title="2.线性回归"></a>2.线性回归</h2><h3 id="1-线性回归模型"><a href="#1-线性回归模型" class="headerlink" title="1.线性回归模型"></a>1.线性回归模型</h3><p>1.房价预测问题(单变量线性回归):<br><img src="https://cdn.jsdelivr.net/gh/0Rec1us/picorep//img/20240418111037.png" width="75%" height="auto"><br>2.训练集: training assets 从训练集中训练模型后用模型进行预测<br><img src="https://cdn.jsdelivr.net/gh/0Rec1us/picorep//img/20240418111514.png" width="75%" hieght="auto"><br>3.线性回归:<br><img src="https://cdn.jsdelivr.net/gh/0Rec1us/picorep//img/20240418112114.png" width="75%" height="auto"></p><h3 id="2-成本函数"><a href="#2-成本函数" class="headerlink" title="2.成本函数"></a>2.成本函数</h3><p>1.成本函数<br><img src="https://cdn.jsdelivr.net/gh/0Rec1us/picorep//img/20240418113042.png" width="50%" height="auto"><br>2.平方误差成本函数<br><img src="https://cdn.jsdelivr.net/gh/0Rec1us/picorep//img/20240418112739.png" width="50%" height="auto"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 人工智能 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Pwn学习笔记(二)-栈溢出</title>
       <link href="/2024/04/17/Pwn%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%8C)-%E6%A0%88%E6%BA%A2%E5%87%BA/"/>
       <url>/2024/04/17/Pwn%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%8C)-%E6%A0%88%E6%BA%A2%E5%87%BA/</url>
